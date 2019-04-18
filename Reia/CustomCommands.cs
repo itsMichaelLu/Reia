@@ -82,17 +82,54 @@ namespace Reia
         [Command("image")]
         public async Task ImgurSearch(CommandContext ctx, params string[] searchTerms)
         {
-            await ctx.RespondAsync("Whoop");
+            await ctx.RespondAsync("To do...");
         }
 
         [Command("roll")]
-        [Description("Return a random integer from a range")]
+        [Description("Return an n digit number")]
         [Aliases("rr")]
+        public async Task RollDigits(CommandContext ctx, int digits)
+        {
+            if (digits < 0)
+            {
+                await ctx.RespondAsync("ʕ •̀ o •́ ʔ NO NEGATIVE NUMBERS");
+                return;
+            }
+            if (digits == 0)
+            {
+                await ctx.RespondAsync("ʕ ͡° ʖ̯ ͡°ʔ you can't roll nothing");
+                return;
+            }
+            if (digits >= 10)
+            {
+                await ctx.RespondAsync("Too big ( ͡° ͜ʖ ͡°) use a number less than 10. use rolld to roll an n sided dice instead");
+                return;
+            }
+
+            string str = "";
+            Random rand = new Random();
+            for (int i = 0; i < digits; i++)
+            {
+                str = rand.Next(0, 9).ToString() + str;
+                if ((i + 1) % 3 == 0 && (i + 1) < digits)
+                {
+                    str = "," + str;
+                }
+            }
+            string englishcorrection = digits == 8 ? "n" : "";
+            await ctx.RespondAsync($"{ctx.User.Mention} rolled a{englishcorrection} {digits} digit number and got...\n🎲 {str} 🎲");
+
+        }
+
+        [Command("rolld")]
+        [Description("Return a random integer from a range")]
+        [Aliases("rd")]
         public async Task RollNumber(CommandContext ctx, params int[] param)
         {
             if(param.Length == 0)
             {
                 await ctx.RespondAsync("OwO Whats the number range you want to roll");
+                return;
             }
 
             // Make sure there are 1 or 2 parameters only
@@ -113,6 +150,16 @@ namespace Reia
                     await ctx.RespondAsync("ʕ •̀ o •́ ʔ NO NEGATIVE NUMBERS");
                     return;
                 }
+                if (param[0] >= param[1])
+                {
+                    await ctx.RespondAsync("ʕ •̀ o •́ ʔ INVALID RANGE");
+                    return;
+                }
+                if (param[1] > 1000000)
+                {
+                     await ctx.RespondAsync("( ͡ಠ ʖ̯ ͡ಠ) Do you really need to roll so high");
+                    return;
+                }
             }
             else if (param.Length == 1)
             {
@@ -126,6 +173,13 @@ namespace Reia
                 await ctx.RespondAsync("ʕ •̀ o •́ ʔ NO NEGATIVE NUMBERS");
                 return;
             }
+
+            if (param[0] > 1000000)
+            {
+                await ctx.RespondAsync("( ͡ಠ ʖ̯ ͡ಠ) Do you really need to roll so high");
+                return;
+            }
+
             Random rand = new Random();
             await ctx.RespondAsync($"{ctx.User.Mention} rolled a number between {min} and {max} and got...\n🎲 {rand.Next(min, max)} 🎲");
         }
